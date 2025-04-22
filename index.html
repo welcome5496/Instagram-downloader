@@ -1,43 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Instagram Downloader</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instagram Profile Downloader</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 40px; }
-    input, button { padding: 10px; margin: 10px; }
-    img { max-width: 300px; margin-top: 20px; }
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 350px;
+    }
+    h1 {
+      color: #333;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 80%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      width: 80%;
+      padding: 12px;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .result {
+      margin-top: 20px;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+    .error {
+      color: red;
+    }
   </style>
 </head>
 <body>
-  <h1>Instagram Downloader</h1>
-  <input type="text" id="username" placeholder="Instagram username" />
-  <br />
-  <button onclick="downloadDP()">Profile Picture</button>
-  <button onclick="getLatestPost()">Latest Post</button>
-
-  <div id="result"></div>
+  <div class="container">
+    <h1>Instagram Profile Downloader</h1>
+    <input type="text" id="username" placeholder="Enter Instagram username" />
+    <div>
+      <button onclick="downloadDP()">Download Profile Picture</button>
+      <button onclick="getLatestPost()">Download Latest Post</button>
+    </div>
+    <div id="result" class="result"></div>
+  </div>
 
   <script>
-    const backend = "https://insta-backend-2hr1.onrender.com"; // Updated with your backend URL
+    const backend = "https://insta-backend-2hr1.onrender.com"; // Your backend URL
 
     async function downloadDP() {
       const username = document.getElementById("username").value;
-      const res = await fetch(`${backend}/profile-pic?username=${username}`);
-      const data = await res.json();
-      document.getElementById("result").innerHTML =
-        data.profile_pic_url
-          ? `<img src="${data.profile_pic_url}" /><p><a href="${data.profile_pic_url}" download>Download DP</a></p>`
-          : `<p>Error: ${data.error}</p>`;
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = 'Loading...';
+
+      try {
+        const response = await fetch(`${backend}/profile-pic?username=${username}`);
+        const data = await response.json();
+        if (data.profile_pic_url) {
+          resultDiv.innerHTML = `
+            <img src="${data.profile_pic_url}" alt="Profile Picture" />
+            <p><a href="${data.profile_pic_url}" download>Download Profile Picture</a></p>
+          `;
+        } else {
+          resultDiv.innerHTML = `<p class="error">Error: ${data.error}</p>`;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<p class="error">Something went wrong!</p>`;
+      }
     }
 
     async function getLatestPost() {
       const username = document.getElementById("username").value;
-      const res = await fetch(`${backend}/latest-post?username=${username}`);
-      const data = await res.json();
-      document.getElementById("result").innerHTML =
-        data.post_url
-          ? `<img src="${data.post_url}" /><p><a href="${data.post_url}" download>Download Post</a></p>`
-          : `<p>Error: ${data.error}</p>`;
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = 'Loading...';
+
+      try {
+        const response = await fetch(`${backend}/latest-post?username=${username}`);
+        const data = await response.json();
+        if (data.post_url) {
+          resultDiv.innerHTML = `
+            <img src="${data.post_url}" alt="Latest Post" />
+            <p><a href="${data.post_url}" download>Download Latest Post</a></p>
+          `;
+        } else {
+          resultDiv.innerHTML = `<p class="error">Error: ${data.error}</p>`;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<p class="error">Something went wrong!</p>`;
+      }
     }
   </script>
 </body>
