@@ -1,57 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Instagram Profile Downloader</title>
+  <title>Instagram Downloader</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 30px;
-      text-align: center;
-    }
-    input {
-      padding: 10px;
-      font-size: 16px;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      margin-left: 10px;
-    }
-    img {
-      margin-top: 20px;
-      max-width: 300px;
-      border-radius: 10px;
-    }
+    body { font-family: sans-serif; text-align: center; padding: 40px; }
+    input, button { padding: 10px; margin: 10px; }
+    img { max-width: 300px; margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h1>Instagram Profile Picture Downloader</h1>
-  <input id="username" type="text" placeholder="Enter Instagram username" />
-  <button onclick="downloadDP()">Get Profile Picture</button>
+  <h1>Instagram Downloader</h1>
+  <input type="text" id="username" placeholder="Instagram username" />
+  <br />
+  <button onclick="downloadDP()">Profile Picture</button>
+  <button onclick="getLatestPost()">Latest Post</button>
 
   <div id="result"></div>
 
   <script>
-    async function downloadDP() {
-      const username = document.getElementById('username').value;
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = 'Loading...';
+    const backend = "https://insta-backend-2hr1.onrender.com"; // Updated with your backend URL
 
-      try {
-        const response = await fetch(`https://your-backend-url.com/profile-pic?username=${username}`);
-        const data = await response.json();
-        if (data.profile_pic_url) {
-          resultDiv.innerHTML = `
-            <img src="${data.profile_pic_url}" alt="Profile Picture" />
-            <p><a href="${data.profile_pic_url}" download>Download Image</a></p>
-          `;
-        } else {
-          resultDiv.innerHTML = `<p>Error: ${data.error}</p>`;
-        }
-      } catch (error) {
-        resultDiv.innerHTML = `<p>Something went wrong!</p>`;
-      }
+    async function downloadDP() {
+      const username = document.getElementById("username").value;
+      const res = await fetch(`${backend}/profile-pic?username=${username}`);
+      const data = await res.json();
+      document.getElementById("result").innerHTML =
+        data.profile_pic_url
+          ? `<img src="${data.profile_pic_url}" /><p><a href="${data.profile_pic_url}" download>Download DP</a></p>`
+          : `<p>Error: ${data.error}</p>`;
+    }
+
+    async function getLatestPost() {
+      const username = document.getElementById("username").value;
+      const res = await fetch(`${backend}/latest-post?username=${username}`);
+      const data = await res.json();
+      document.getElementById("result").innerHTML =
+        data.post_url
+          ? `<img src="${data.post_url}" /><p><a href="${data.post_url}" download>Download Post</a></p>`
+          : `<p>Error: ${data.error}</p>`;
     }
   </script>
 </body>
